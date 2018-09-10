@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace tcalc.Evaluator
+namespace tcalc.Evaluation
 {
     public class DurationResult : Result
     {

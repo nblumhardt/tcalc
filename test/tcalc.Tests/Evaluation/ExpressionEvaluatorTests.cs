@@ -1,9 +1,9 @@
 ﻿using System;
-using tcalc.Evaluator;
+using tcalc.Evaluation;
 using tcalc.Expressions;
 using Xunit;
 
-namespace tcalc.Tests.Evaluator
+namespace tcalc.Tests.Evaluation
 {
     public class ExpressionEvaluatorTests
     {

@@ -1,4 +1,4 @@
-﻿namespace tcalc.Evaluator
+﻿namespace tcalc.Evaluation
 {
     public abstract class Result
     {

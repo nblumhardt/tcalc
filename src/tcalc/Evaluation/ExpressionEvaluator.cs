@@ -1,7 +1,7 @@
 ﻿using System;
 using tcalc.Expressions;
 
-namespace tcalc.Evaluator
+namespace tcalc.Evaluation
 {
     public static class ExpressionEvaluator
     {

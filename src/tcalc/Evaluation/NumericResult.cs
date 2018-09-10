@@ -1,6 +1,6 @@
 ﻿using System.Globalization;
 
-namespace tcalc.Evaluator
+namespace tcalc.Evaluation
 {
     public class NumericResult : Result
     {

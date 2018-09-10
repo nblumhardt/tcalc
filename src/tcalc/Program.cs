@@ -1,6 +1,6 @@
 ﻿using System;
-using tcalc.Evaluator;
-using tcalc.Expressions;
+using tcalc.Evaluation;
+using tcalc.Parsing;
 
 namespace tcalc
 {
@@ -16,15 +16,18 @@ namespace tcalc
                 {
                     try
                     {
-                        // TODO: Parse the input `line` :-)
-                        var left = new NumericValue(5);
-                        var right = new NumericValue(3);
-                        var expr = new BinaryExpression(left, right, Operator.Add);
+                        if (ExpressionParser.TryParse(line, out var expr, out var error))
+                        {
+                            var result = ExpressionEvaluator.Evaluate(expr);
 
-                        var result = ExpressionEvaluator.Evaluate(expr);
-
-                        Console.ForegroundColor = ConsoleColor.Cyan;
-                        Console.WriteLine(result);
+                            Console.ForegroundColor = ConsoleColor.Cyan;
+                            Console.WriteLine(result);
+                        }
+                        else
+                        {
+                            Console.ForegroundColor = ConsoleColor.Yellow;
+                            Console.WriteLine(error);
+                        }
                     }
                     catch (Exception ex)
                     {
@@ -33,9 +36,9 @@ namespace tcalc
                     }
 
                     Console.ResetColor();
+                    Console.WriteLine();
                 }
 
-                Console.WriteLine();
                 Console.Write("tcalc> ");
                 line = Console.ReadLine();
             }
