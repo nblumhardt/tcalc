@@ -89,7 +89,7 @@ namespace tcalc.Evaluation
             if (left is DurationResult dl2 && right is DurationResult dr)
                 return new NumericResult(dl2.Value / dr.Value);
 
-            throw new EvaluationException($"Values {left} and {right} cannot be multiplied.");
+            throw new EvaluationException($"Value {left} cannot be divided by {right}.");
         }
     }
 }
