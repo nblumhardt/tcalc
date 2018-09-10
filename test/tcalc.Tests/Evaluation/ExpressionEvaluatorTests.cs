@@ -12,7 +12,7 @@ namespace tcalc.Tests.Evaluation
         {
             var left = new NumericValue(5);
             var right = new NumericValue(3);
-            var expr = new BinaryExpression(left, right, Operator.Add);
+            var expr = new BinaryExpression(Operator.Add, left, right);
             var result = ExpressionEvaluator.Evaluate(expr);
             var actual = Assert.IsType<NumericResult>(result);
             Assert.Equal(8, actual.Value);
@@ -23,10 +23,10 @@ namespace tcalc.Tests.Evaluation
         {
             var mulLeft = new NumericValue(5);
             var mulRight = new NumericValue(3);
-            var mulExpr = new BinaryExpression(mulLeft, mulRight, Operator.Multiply);
+            var mulExpr = new BinaryExpression(Operator.Multiply, mulLeft, mulRight);
 
             var divLeft = new DurationValue(TimeSpan.FromMinutes(60));
-            var divExpr = new BinaryExpression(divLeft, mulExpr, Operator.Divide);
+            var divExpr = new BinaryExpression(Operator.Divide, divLeft, mulExpr);
 
             var result = ExpressionEvaluator.Evaluate(divExpr);
             var actual = Assert.IsType<DurationResult>(result);
@@ -38,7 +38,7 @@ namespace tcalc.Tests.Evaluation
         {
             var left = new NumericValue(5);
             var right = new DurationValue(TimeSpan.FromSeconds(3));
-            var expr = new BinaryExpression(left, right, Operator.Divide);
+            var expr = new BinaryExpression(Operator.Divide, left, right);
             Assert.Throws<EvaluationException>(() => ExpressionEvaluator.Evaluate(expr));
         }
     }

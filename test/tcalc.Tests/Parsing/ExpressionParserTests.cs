@@ -58,6 +58,6 @@ namespace tcalc.Tests.Parsing
             Assert.True(TestParser.TryParseAll(ExpressionParser.Duration, "0m", out var expr, out var err), err);
             var duration = Assert.IsType<DurationValue>(expr);
             Assert.Equal(TimeSpan.Zero, duration.Value);
-        }        
+        }
     }
 }
