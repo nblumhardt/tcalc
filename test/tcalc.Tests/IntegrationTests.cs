@@ -13,9 +13,12 @@ namespace tcalc.Tests
         [InlineData("3d / 8h", "9")]
         [InlineData("1d + 2ms", "1.00:00:00.0020000")]
         [InlineData("(1h-10m)/40s", "75")]
-        public void ValidResultsAreComputed(string input, string result)
+        public void ValidResultsAreComputed(string source, string result)
         {
-            Assert.True(ExpressionParser.TryParse(input, out var expr, out var err), err);
+            var tokens = ExpressionTokenizer.TryTokenize(source);
+            Assert.True(tokens.HasValue, tokens.ToString());
+
+            Assert.True(ExpressionParser.TryParse(tokens.Value, out var expr, out var err), err);
             var actual = ExpressionEvaluator.Evaluate(expr);
             Assert.Equal(result, actual.ToString());
         }

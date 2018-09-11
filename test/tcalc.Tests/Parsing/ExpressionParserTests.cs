@@ -33,7 +33,7 @@ namespace tcalc.Tests.Parsing
         [InlineData("!!!")]
         public void InvalidNumbersAreRejected(string input)
         {
-            Assert.False(TestParser.TryParseAll(ExpressionParser.Number, input, out var expr, out var err));
+            Assert.False(TestParser.TryParseAll(ExpressionParser.Number, input, out _, out _));
         }
 
         [Fact]

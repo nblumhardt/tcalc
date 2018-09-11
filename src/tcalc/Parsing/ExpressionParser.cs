@@ -1,70 +1,60 @@
-﻿using System;
-using Superpower;
+﻿using Superpower;
 using Superpower.Model;
 using Superpower.Parsers;
 using tcalc.Expressions;
+
+using ExpressionTokenParser = Superpower.TokenListParser<tcalc.Parsing.ExpressionToken, tcalc.Expressions.Expression>;
 
 namespace tcalc.Parsing
 {
     public static class ExpressionParser
     {
-        public static TextParser<Expression> Number { get; } =
-            Numerics.DecimalDouble
-                .Token()
+        public static ExpressionTokenParser Number { get; } =
+            Token.EqualTo(ExpressionToken.Number)
+                .Apply(Numerics.DecimalDouble)
                 .Select(d => (Expression)new NumericValue(d));
 
-        public static TextParser<TimeSpan> Magnitude { get; } =
-            Character.EqualTo('d').Value(TimeSpan.FromDays(1))
-                .Or(Character.EqualTo('h').Value(TimeSpan.FromHours(1)))
-                .Or(Span.EqualTo("ms").Try().Value(TimeSpan.FromMilliseconds(1)))
-                .Or(Character.EqualTo('m').Value(TimeSpan.FromMinutes(1)))
-                .Or(Character.EqualTo('s').Value(TimeSpan.FromSeconds(1)));
-
-        public static TextParser<Expression> Duration { get; } =
-            Numerics.DecimalDouble
-                .Then(d => Magnitude.Select(m => m * d))
-                .Token()
+        public static ExpressionTokenParser Duration { get; } =
+            Token.EqualTo(ExpressionToken.Duration)
+                .Apply(ExpressionTokenizer.Duration)
                 .Select(ts => (Expression)new DurationValue(ts));
 
-        public static TextParser<Operator> Op(char symbol, Operator op) => 
-            Character.EqualTo(symbol)
-                .Token()
+        public static TokenListParser<ExpressionToken, Operator> Op(ExpressionToken token, Operator op) => 
+            Token.EqualTo(token)
                 .Value(op);
 
-        public static TextParser<Operator> Add = Op('+', Operator.Add);
-        public static TextParser<Operator> Subtract = Op('-', Operator.Subtract);
-        public static TextParser<Operator> Multiply = Op('*', Operator.Multiply);
-        public static TextParser<Operator> Divide = Op('/', Operator.Divide);
+        public static TokenListParser<ExpressionToken, Operator> Add = Op(ExpressionToken.Plus, Operator.Add);
+        public static TokenListParser<ExpressionToken, Operator> Subtract = Op(ExpressionToken.Minus, Operator.Subtract);
+        public static TokenListParser<ExpressionToken, Operator> Multiply = Op(ExpressionToken.Asterisk, Operator.Multiply);
+        public static TokenListParser<ExpressionToken, Operator> Divide = Op(ExpressionToken.Slash, Operator.Divide);
 
-        public static TextParser<Expression> Literal = Duration.Try().Or(Number);
+        public static ExpressionTokenParser Literal = Duration.Or(Number);
 
-        static TextParser<Expression> Factor { get; } =
-            (from lparen in Character.EqualTo('(').Token()
-                from expr in Parse.Ref(() => Expression)
-                from rparen in Character.EqualTo(')').Token()
-                select expr)
+        static ExpressionTokenParser Factor { get; } =
+            (from lparen in Token.EqualTo(ExpressionToken.LParen)
+             from expr in Parse.Ref(() => Expression)
+             from rparen in Token.EqualTo(ExpressionToken.RParen)
+             select expr)
             .Or(Literal);
 
-        static readonly TextParser<Expression> Term = Parse.Chain(Multiply.Or(Divide), Factor, BinaryExpression.Create);
-        static readonly TextParser<Expression> Expression = Parse.Chain(Add.Or(Subtract), Term, BinaryExpression.Create);
+        static readonly ExpressionTokenParser Term = Parse.Chain(Multiply.Or(Divide), Factor, BinaryExpression.Create);
+        static readonly ExpressionTokenParser Expression = Parse.Chain(Add.Or(Subtract), Term, BinaryExpression.Create);
 
-        static readonly TextParser<Expression> Source = Expression.AtEnd();
+        static readonly ExpressionTokenParser Source = Expression.AtEnd();
 
-        public static bool TryParse(string input, out Expression expr, out string error)
+        public static bool TryParse(TokenList<ExpressionToken> tokens, out Expression expr, out string error)
         {
-            if (input == null) throw new ArgumentNullException(nameof(input));
-
-            var result = Source(new TextSpan(input));
-            if (result.HasValue)
+            var result = Source(tokens);
+            if (!result.HasValue)
             {
-                expr = result.Value;
-                error = null;
-                return true;
+                expr = null;
+                error = result.ToString();
+                return false;
             }
 
-            expr = null;
-            error = result.ToString();
-            return false;
+            expr = result.Value;
+            error = null;
+            return true;
         }
     }
 }

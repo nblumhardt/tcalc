@@ -16,7 +16,13 @@ namespace tcalc
                 {
                     try
                     {
-                        if (ExpressionParser.TryParse(line, out var expr, out var error))
+                        var tokens = ExpressionTokenizer.TryTokenize(line);
+                        if (!tokens.HasValue)
+                        {
+                            Console.ForegroundColor = ConsoleColor.Yellow;
+                            Console.WriteLine(tokens.ToString());
+                        }
+                        else if (ExpressionParser.TryParse(tokens.Value, out var expr, out var error))
                         {
                             var result = ExpressionEvaluator.Evaluate(expr);
 
