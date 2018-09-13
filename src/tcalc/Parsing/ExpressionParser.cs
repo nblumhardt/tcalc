@@ -23,12 +23,12 @@ namespace tcalc.Parsing
             Token.EqualTo(token)
                 .Value(op);
 
-        public static TokenListParser<ExpressionToken, Operator> Add = Op(ExpressionToken.Plus, Operator.Add);
-        public static TokenListParser<ExpressionToken, Operator> Subtract = Op(ExpressionToken.Minus, Operator.Subtract);
-        public static TokenListParser<ExpressionToken, Operator> Multiply = Op(ExpressionToken.Asterisk, Operator.Multiply);
-        public static TokenListParser<ExpressionToken, Operator> Divide = Op(ExpressionToken.Slash, Operator.Divide);
+        public static TokenListParser<ExpressionToken, Operator> Add { get; } = Op(ExpressionToken.Plus, Operator.Add);
+        public static TokenListParser<ExpressionToken, Operator> Subtract { get; } = Op(ExpressionToken.Minus, Operator.Subtract);
+        public static TokenListParser<ExpressionToken, Operator> Multiply { get; } = Op(ExpressionToken.Asterisk, Operator.Multiply);
+        public static TokenListParser<ExpressionToken, Operator> Divide { get; } = Op(ExpressionToken.Slash, Operator.Divide);
 
-        public static ExpressionTokenParser Literal = Duration.Or(Number);
+        public static ExpressionTokenParser Literal { get; } = Duration.Or(Number);
 
         static ExpressionTokenParser Factor { get; } =
             (from lparen in Token.EqualTo(ExpressionToken.LParen)
@@ -37,10 +37,10 @@ namespace tcalc.Parsing
              select expr)
             .Or(Literal);
 
-        static readonly ExpressionTokenParser Term = Parse.Chain(Multiply.Or(Divide), Factor, BinaryExpression.Create);
-        static readonly ExpressionTokenParser Expression = Parse.Chain(Add.Or(Subtract), Term, BinaryExpression.Create);
+        static ExpressionTokenParser Term { get; } = Parse.Chain(Multiply.Or(Divide), Factor, BinaryExpression.Create);
+        static ExpressionTokenParser Expression { get; } = Parse.Chain(Add.Or(Subtract), Term, BinaryExpression.Create);
 
-        static readonly ExpressionTokenParser Source = Expression.AtEnd();
+        static ExpressionTokenParser Source { get; } = Expression.AtEnd();
 
         public static bool TryParse(TokenList<ExpressionToken> tokens, out Expression expr, out string error)
         {
