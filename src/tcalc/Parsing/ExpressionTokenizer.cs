@@ -29,7 +29,6 @@ namespace tcalc.Parsing
             .Match(Character.EqualTo('('), ExpressionToken.LParen)
             .Match(Character.EqualTo(')'), ExpressionToken.RParen)
             .Ignore(Span.WhiteSpace)
-            .Match(Character.LetterOrDigit.AtLeastOnce(), ExpressionToken.Text, requireDelimiters: true)
             .Build();
 
         public static Result<TokenList<ExpressionToken>> TryTokenize(string source)
