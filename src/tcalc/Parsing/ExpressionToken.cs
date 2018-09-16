@@ -24,9 +24,6 @@ namespace tcalc.Parsing
         LParen,
 
         [Token(Example = ")")]
-        RParen,
-
-        // Catch-all for invalid input
-        Text
+        RParen
     }
 }
