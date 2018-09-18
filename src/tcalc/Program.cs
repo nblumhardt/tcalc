@@ -1,4 +1,5 @@
 ﻿using System;
+using Superpower.Model;
 using tcalc.Evaluation;
 using tcalc.Parsing;
 
@@ -6,9 +7,11 @@ namespace tcalc
 {
     class Program
     {
+        const string Prompt = "tcalc> ";
+
         static void Main()
         {
-            Console.Write("tcalc> ");
+            Console.Write(Prompt);
             var line = Console.ReadLine();
             while (line != null)
             {
@@ -19,20 +22,17 @@ namespace tcalc
                         var tokens = ExpressionTokenizer.TryTokenize(line);
                         if (!tokens.HasValue)
                         {
-                            Console.ForegroundColor = ConsoleColor.Yellow;
-                            Console.WriteLine(tokens.ToString());
+                            WriteSyntaxError(tokens.ToString(), tokens.ErrorPosition);
                         }
-                        else if (ExpressionParser.TryParse(tokens.Value, out var expr, out var error))
+                        else if (!ExpressionParser.TryParse(tokens.Value, out var expr, out var error, out var errorPosition))
                         {
-                            var result = ExpressionEvaluator.Evaluate(expr);
-
-                            Console.ForegroundColor = ConsoleColor.Cyan;
-                            Console.WriteLine(result);
+                            WriteSyntaxError(error, errorPosition);
                         }
                         else
                         {
-                            Console.ForegroundColor = ConsoleColor.Yellow;
-                            Console.WriteLine(error);
+                            var result = ExpressionEvaluator.Evaluate(expr);
+                            Console.ForegroundColor = ConsoleColor.Cyan;
+                            Console.WriteLine(result);
                         }
                     }
                     catch (Exception ex)
@@ -45,9 +45,18 @@ namespace tcalc
                     Console.WriteLine();
                 }
 
-                Console.Write("tcalc> ");
+                Console.Write(Prompt);
                 line = Console.ReadLine();
             }
+        }
+
+        static void WriteSyntaxError(string message, Position errorPosition)
+        {
+            if (errorPosition.HasValue && errorPosition.Line == 1)
+                Console.WriteLine(new string(' ', Prompt.Length + errorPosition.Column - 1) + '^');
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine(message);
+            Console.ResetColor();
         }
     }
 }

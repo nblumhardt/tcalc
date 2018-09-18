@@ -16,7 +16,7 @@ namespace tcalc.Parsing
 
         public static ExpressionTokenParser Duration { get; } =
             Token.EqualTo(ExpressionToken.Duration)
-                .Apply(ExpressionTokenizer.Duration)
+                .Apply(ExpressionTextParsers.Duration)
                 .Select(ts => (Expression)new DurationValue(ts));
 
         public static TokenListParser<ExpressionToken, Operator> Op(ExpressionToken token, Operator op) => 
@@ -42,18 +42,20 @@ namespace tcalc.Parsing
 
         static ExpressionTokenParser Source { get; } = Expression.AtEnd();
 
-        public static bool TryParse(TokenList<ExpressionToken> tokens, out Expression expr, out string error)
+        public static bool TryParse(TokenList<ExpressionToken> tokens, out Expression expr, out string error, out Position errorPosition)
         {
             var result = Source(tokens);
             if (!result.HasValue)
             {
                 expr = null;
                 error = result.ToString();
+                errorPosition = result.ErrorPosition;
                 return false;
             }
 
             expr = result.Value;
             error = null;
+            errorPosition = Position.Empty;
             return true;
         }
     }
