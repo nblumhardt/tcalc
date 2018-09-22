@@ -1,4 +1,5 @@
-﻿using tcalc.Evaluation;
+﻿using Superpower.Model;
+using tcalc.Evaluation;
 using tcalc.Parsing;
 using Xunit;
 
@@ -18,9 +19,10 @@ namespace tcalc.Tests
             var tokens = ExpressionTokenizer.TryTokenize(source);
             Assert.True(tokens.HasValue, tokens.ToString());
 
-            Assert.True(ExpressionParser.TryParse(tokens.Value, out var expr, out var err), err);
+            Assert.True(ExpressionParser.TryParse(tokens.Value, out var expr, out var err, out var errorPosition), err);
             var actual = ExpressionEvaluator.Evaluate(expr);
             Assert.Equal(result, actual.ToString());
+            Assert.Equal(errorPosition, new Position(0, 0, 0));
         }
     }
 }
