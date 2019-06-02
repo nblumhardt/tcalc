@@ -2,6 +2,8 @@
 using System.Threading;
 using Superpower;
 
+// ReSharper disable UnusedMember.Global
+
 namespace tcalc.Parsing
 {
     static class ParserExtensions

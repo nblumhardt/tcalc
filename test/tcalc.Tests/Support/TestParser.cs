@@ -3,6 +3,8 @@ using Superpower;
 using Superpower.Model;
 using tcalc.Parsing;
 
+// ReSharper disable UnusedMember.Global
+
 namespace tcalc.Tests.Support
 {
     static class TestParser
